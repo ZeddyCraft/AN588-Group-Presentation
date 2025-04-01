@@ -1,0 +1,47 @@
+---
+title: 'Survey Data: Properly Prepping, Analyzing, and Modeling For Research'
+author: "Lindsay Warrell & Jonathan Zhang"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## **Mixed Effects Modeling**
+
+## Objectives
+
+| In this module, we will learn:
+| 1. How to clean and manipulate survey data.
+| 2. How to calculate descriptive statistics using survey data
+| 3. How to determine what type of analyses on survey data.
+
+## **BUT FIRST:**
+
+## **Why Use Survey Data in Anthropology?**
+
+Survey data helps anthropologists:
+
+1.  Understand cultural trends and social behavior.
+
+2.  Collect both quantitative and qualitative data, providing different approaches that analyzing both broad trends and detailed insights within R.
+
+3.  Compare societies/populations across different worlds and time periods.
+
+4.  Quantify ethnographic findings with statistical evidence.
+
+**Example:**
+
+------------------------------------------------------------------------
+
+## **1. Loading and Exploring Data**
+
+We will use a `survey` dataset for this Module. We will need to install some packages needed to run the code and explore it:
+
+```{r}
+# First install these packages
+library(tidyverse)
+library(curl)
+```
+
+```{r}
+# Load the dataset
+```
