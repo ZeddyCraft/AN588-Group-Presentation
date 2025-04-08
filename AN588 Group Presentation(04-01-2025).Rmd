@@ -44,4 +44,21 @@ library(curl)
 
 ```{r}
 # Load the dataset
+C<-curl("https://raw.githubusercontent.com/ZeddyCraft/AN588-Group-Presentation/refs/heads/main/Cleaned%20Data%20(Updated).csv")
+Survey<-read.csv(C)
+```
+
+##Qualitative Statistics
+
+One of the most useful parts of surveys is qualitative statistics or data represented by words or phrases, not numbers. Take for example, the "BU_Description" column, based on the prompt "Describe BU in one word". 
+
+```{r}
+head(Survey$BU_Description)
+```
+Even in the first few words, we have a large variety of responses! But how can we organize this data? How can we analyze it? Traditional methods of data visualization don't work and neither do traditional methods of analysis. One way of data visualization is through word clouds.
+Word clouds correlate the frequency of a descriptor with the size of the word in the image, giving us a visual representation of these descriptions. 
+
+```{r}
+library(wordcloud2)
+wordcloud2(Survey$BU_Description, color="random-light", backgroundColor="grey")
 ```
