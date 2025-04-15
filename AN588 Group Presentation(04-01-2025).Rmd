@@ -39,26 +39,36 @@ We will use a `survey` dataset for this Module. We will need to install some pac
 ```{r}
 # First install these packages
 library(tidyverse)
+library(lterdatasampler)
 library(curl)
 ```
 
 ```{r}
 # Load the dataset
-C<-curl("https://raw.githubusercontent.com/ZeddyCraft/AN588-Group-Presentation/refs/heads/main/Cleaned%20Data%20(Updated).csv")
+C<-curl("https://raw.githubusercontent.com/ZeddyCraft/AN588-Group-Presentation/refs/heads/main/Cleaned_Data.csv")
 Survey<-read.csv(C)
 ```
 
 ##Qualitative Statistics
 
-One of the most useful parts of surveys is qualitative statistics or data represented by words or phrases, not numbers. Take for example, the "BU_Description" column, based on the prompt "Describe BU in one word". 
+One of the most useful parts of surveys is qualitative statistics or data represented by words or phrases, not numbers. Take for example, the "Favorite_Color" column, based on the prompt "What is your favorite color". 
 
 ```{r}
-head(Survey$BU_Description)
+head(Survey$Favorite_Color)
 ```
-Even in the first few words, we have a large variety of responses! But how can we organize this data? How can we analyze it? Traditional methods of data visualization don't work and neither do traditional methods of analysis. One way of data visualization is through word clouds.
-Word clouds correlate the frequency of a descriptor with the size of the word in the image, giving us a visual representation of these descriptions. 
+How can we organize this data? How can we analyze it? Traditional methods of data visualization don't work and neither do traditional methods of analysis. One way of data visualization is through word clouds.
+Word clouds correlate the frequency of a descriptor with the size of the word in the image, giving us a visual representation of these descriptions. The package wordcloud2 gives us a function "wordcloud2" which lets us create these in r.
 
 ```{r}
 library(wordcloud2)
-wordcloud2(Survey$BU_Description, color="random-light", backgroundColor="grey")
+#first let's find the frequency (or counts) of each of the color responses in r
+t<-table(Survey$Favorite_Color)
+wordcloud2(t, size=.8, color=(c("Black","Blue","Brown","Cyan","Green","Pink","Purple","Red","Teal","Yellow")))
 ```
+That's visualization! Now let's try again looking at majors.
+```{r}
+t2<-table(Survey$Major)
+wordcloud2(t2, size=.4, color="random-dark")
+```
+
+ 
