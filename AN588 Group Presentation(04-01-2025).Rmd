@@ -45,9 +45,34 @@ library(curl)
 
 ```{r}
 # Load the dataset
-C<-curl("https://raw.githubusercontent.com/ZeddyCraft/AN588-Group-Presentation/refs/heads/main/Cleaned_Data.csv")
+C<-curl("https://raw.githubusercontent.com/ZeddyCraft/AN588-Group-Presentation/refs/heads/main/AN588%20Survey%20(Responses)%20-%20Cleaned%20Data.csv")
 Survey<-read.csv(C)
 ```
+
+##Cleaning Data
+
+Often, since surveys are filled out by humans, they are often times riddled with human errors that make it difficult to analyze data. Take for example our original survey data:
+
+```{r}
+O<-curl("https://raw.githubusercontent.com/ZeddyCraft/AN588-Group-Presentation/refs/heads/main/AN588%20Survey%20(Responses)%20-%20Form%20Responses%201.csv")
+os<-read.csv(O)
+head(os)
+```
+
+The initial instructions said to answer height in inches yet people answered in feet. There's also a lot of variation in the answers like how some people added units (such as in, ", or inches). If you look at the major column, you'll see people with the same major answer the question in different ways (for example, one person put "CS" while another put "Computer Science"). So how do we make this data analyzable? We have to clean it! 
+
+First, pick a format and change all of the data to follow it. For example, let's say you want your height to be exclusively a number with no units attached to it. You then need to manually go through each entry in that column and edit it to match.
+
+If you find that the dataset is still not working even after cleaning it, you will likely have to clean it again. Here's a couple of things to look for:
+1. Is all of the data spelled correctly?
+2. Is all of the data actually in the same format?
+3. Are entries that are supposed to be the same or similar actually the same or similar?
+4. Check to make sure all of the capitalization is the same.
+5. Check to make sure there are no spaces at the end of words or that those spaces are consistent.
+
+###Challenge 1
+
+Looking at the given dataset, choose two columns and decide how you would clean it. 
 
 ##Qualitative Statistics
 
@@ -70,5 +95,20 @@ That's visualization! Now let's try again looking at majors.
 t2<-table(Survey$Major)
 wordcloud2(t2, size=.4, color="random-dark")
 ```
+Another common form of visualization is through graphs! The two most common types of graphs used are pie graphs and bar graphs. Let's make a few graphs using the favorite color of the respondents!
+```{r}
+ggplot(Survey, aes(x=Favorite_Color, fill=Favorite_Color))+
+  geom_bar(show.legend = F)+
+  scale_fill_manual(values=c("black","blue","brown","cyan","green","pink","purple","red","turquoise","yellow"))
+pie(x=t,col=c("black","blue","brown","cyan","green","pink","purple","red","turquoise","yellow"))
+```
 
- 
+Notice how ggplot doesn't have a built-in function for pie graphs. You actually can make pie graphs using ggplot! Here's a good [guide](https://r-graph-gallery.com/piechart-ggplot2.html) on how to do so!
+###Challenge 3
+Using the pie_crab data set from lterdatasampler make your own data visualizations using the site column.
+```{r}
+t_crab<-table(pie_crab$site)
+wordcloud2(t_crab)
+ggplot(pie_crab, aes(x=site,fill=site))+
+  geom_bar()
+```
