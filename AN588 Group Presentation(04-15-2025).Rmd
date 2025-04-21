@@ -29,7 +29,11 @@ library(tidyverse)
 library(curl)
 library(ggplot2)
 library(tm)
+<<<<<<< HEAD
 library(wordcloud2)
+=======
+library(wordcloud)
+>>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 library(RColorBrewer)
 ```
 
@@ -73,7 +77,12 @@ Through open-and closed-ended survey questions, they can:
 
 **1. Loading and Exploring the Data**
 ![](https://www.publicvoice.co.nz/wp-content/uploads/2017/11/datatoon.jpg)
+<<<<<<< HEAD
 We will use a `survey` dataset for this Module. We will need to load in the dataset:
+=======
+We will use a `survey` dataset for this Module. We will need to install
+some packages needed to run the code and explore it:
+>>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 
 ```{r}
 # Load the raw dataset
@@ -122,7 +131,11 @@ head(d)
 Discussion: What differences do you see with this dataset? How does it
 influence our research going forward?
 
+<<<<<<< HEAD
 *TAKEAWAY: Clean your data!!*
+=======
+*TAKEAWAY: Clean you data!!*
+>>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 
 # Challenge 2: Test a Hypothesis
 
@@ -195,7 +208,12 @@ influential on students' views of their future.
 
 ## Qualitative Statistics
 
+<<<<<<< HEAD
 ![](https://s3.amazonaws.com/lowres.cartoonstock.com/business-commerce-market_research-market_surveys-market_researchers-researcher-product_research-ato0018_low.jpg)
+=======
+![alt text
+here](https://s3.amazonaws.com/lowres.cartoonstock.com/business-commerce-market_research-market_surveys-market_researchers-researcher-product_research-ato0018_low.jpg)
+>>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 One of the most useful parts of surveys is qualitative statistics or
 data represented by words or phrases, not numbers.
 
@@ -215,11 +233,16 @@ these descriptions. The package wordcloud2 gives us a function
 "wordcloud2" which lets us create these in r.
 
 ```{r wordcloud}
+<<<<<<< HEAD
+=======
+library(wordcloud2)
+>>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 #first let's find the frequency (or counts) of each of the color responses in r
 t<-table(d$Favorite_Color)
 wordcloud2(t, size=.8, color=(c("Black","Blue","Brown","Cyan","Green","Pink","Purple","Red","Teal","Yellow")))
 ```
 
+<<<<<<< HEAD
 That's visualization! Word cloud can be an amazing tool to use for your
 data visuals. Another common form of visualization is through graphs! The two most common types of graphs used are pie graphs and bar graphs. Let's make a few graphs using the favorite color of the respondents!
 
@@ -234,12 +257,23 @@ Notice how ggplot doesn't have a built-in function for pie graphs. You actually 
 # Challenge 3
 
 Now it's your turn. Let's try making a word cloud and a bar graph with the Majors column
+=======
+That's visualization! Wordcloud can be an amazing tool to use for your
+data visuals.
+
+# Challenge 3
+
+Now it's your turn. Let's try making this with the Majors column.
+>>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 
 ```{r}
 t2<-table(d$Major)
 wordcloud2(t2, size=.4, color="random-dark")
+<<<<<<< HEAD
 ggplot(d, aes(x=Major,fill=Major))+
   geom_bar(show.legend = F)
+=======
+>>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 ```
 
 **Discussion Prompt:** What is the most frequent major that appeared in
