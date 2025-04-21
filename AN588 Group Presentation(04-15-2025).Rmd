@@ -22,18 +22,12 @@ populations. In this module, you'll explore how structured survey
 responses can be analyzed to reveal patterns and meanings relevant to
 social science questions. To get started, you’ll need the following:
 
-**Download the Required packages**
-
 ```{r setup, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(curl)
 library(ggplot2)
 library(tm)
-<<<<<<< HEAD
 library(wordcloud2)
-=======
-library(wordcloud)
->>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 library(RColorBrewer)
 ```
 
@@ -77,12 +71,7 @@ Through open-and closed-ended survey questions, they can:
 
 **1. Loading and Exploring the Data**
 ![](https://www.publicvoice.co.nz/wp-content/uploads/2017/11/datatoon.jpg)
-<<<<<<< HEAD
 We will use a `survey` dataset for this Module. We will need to load in the dataset:
-=======
-We will use a `survey` dataset for this Module. We will need to install
-some packages needed to run the code and explore it:
->>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 
 ```{r}
 # Load the raw dataset
@@ -112,7 +101,7 @@ errors in your analysis. Common cleaning steps include:
 -   Converting text responses to numeric or categorical variables (e.g.
     as.numeric)
 -   Handling missing data appropriately
--   Standardizing scales (e.g., Likert items)
+-   Standardizing scales 
 
 You can clean your data using R (e.g., `mutate()`, `rename()`,
 `filter()` functions in `dplyr`), or manually in a spreadsheet if the
@@ -131,11 +120,7 @@ head(d)
 Discussion: What differences do you see with this dataset? How does it
 influence our research going forward?
 
-<<<<<<< HEAD
 *TAKEAWAY: Clean your data!!*
-=======
-*TAKEAWAY: Clean you data!!*
->>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
 
 # Challenge 2: Test a Hypothesis
 
@@ -208,12 +193,10 @@ influential on students' views of their future.
 
 ## Qualitative Statistics
 
-<<<<<<< HEAD
 ![](https://s3.amazonaws.com/lowres.cartoonstock.com/business-commerce-market_research-market_surveys-market_researchers-researcher-product_research-ato0018_low.jpg)
 =======
-![alt text
-here](https://s3.amazonaws.com/lowres.cartoonstock.com/business-commerce-market_research-market_surveys-market_researchers-researcher-product_research-ato0018_low.jpg)
->>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
+![](https://s3.amazonaws.com/lowres.cartoonstock.com/business-commerce-market_research-market_surveys-market_researchers-researcher-product_research-ato0018_low.jpg)
+
 One of the most useful parts of surveys is qualitative statistics or
 data represented by words or phrases, not numbers.
 
@@ -230,19 +213,17 @@ methods of analysis. One way of data visualization is through word
 clouds. Word clouds correlate the frequency of a descriptor with the
 size of the word in the image, giving us a visual representation of
 these descriptions. The package wordcloud2 gives us a function
-"wordcloud2" which lets us create these in r.
+"wordcloud2" which allows us to create these in r.
 
 ```{r wordcloud}
-<<<<<<< HEAD
-=======
+
 library(wordcloud2)
->>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
+
 #first let's find the frequency (or counts) of each of the color responses in r
 t<-table(d$Favorite_Color)
 wordcloud2(t, size=.8, color=(c("Black","Blue","Brown","Cyan","Green","Pink","Purple","Red","Teal","Yellow")))
 ```
 
-<<<<<<< HEAD
 That's visualization! Word cloud can be an amazing tool to use for your
 data visuals. Another common form of visualization is through graphs! The two most common types of graphs used are pie graphs and bar graphs. Let's make a few graphs using the favorite color of the respondents!
 
@@ -253,27 +234,20 @@ ggplot(d, aes(x=Favorite_Color, fill=Favorite_Color))+
 pie(x=t,col=c("black","blue","brown","cyan","green","pink","purple","red","turquoise","yellow"))
 ```
 
-Notice how ggplot doesn't have a built-in function for pie graphs. You actually can make pie graphs using ggplot! Here's a good [guide](https://r-graph-gallery.com/piechart-ggplot2.html) on how to do so!
-# Challenge 3
-
-Now it's your turn. Let's try making a word cloud and a bar graph with the Majors column
-=======
-That's visualization! Wordcloud can be an amazing tool to use for your
-data visuals.
+Notice how ggplot doesn't have a built-in function for pie charts. You actually can make pie charts using ggplot! Here's a good [guide](https://r-graph-gallery.com/piechart-ggplot2.html) on how to do so!
 
 # Challenge 3
 
-Now it's your turn. Let's try making this with the Majors column.
->>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
+Now it's your turn. Let's try making a word cloud and a bar graph with the Majors column.
 
 ```{r}
 t2<-table(d$Major)
 wordcloud2(t2, size=.4, color="random-dark")
-<<<<<<< HEAD
+
 ggplot(d, aes(x=Major,fill=Major))+
-  geom_bar(show.legend = F)
-=======
->>>>>>> d5910866d3e5b231de545107c91d0f0e268df77d
+  geom_bar()+
+  theme(axis.text.x=element_blank(), legend.key.size=unit(.1, "cm"))
+
 ```
 
 **Discussion Prompt:** What is the most frequent major that appeared in
@@ -290,4 +264,3 @@ visualization — all from one simple dataset. The skills here are the
 foundation for both research and applied work.
 
 ![](https://s3.amazonaws.com/lowres.cartoonstock.com/business-commerce-businesses-reports-opinion_polls-managers-surveys-tmcn2539_low.jpg)
-=======
