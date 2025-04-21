@@ -8,7 +8,30 @@ editor_options:
     wrap: 72
 ---
 
-## **Survey Data: Properly Prepping, Analyzing, and Modeling For Research**
+# **Using Survey Data in Anthropology: Properly Prepping, Analyzing, and Modeling**
+
+![](https://c8.alamy.com/comp/2HNPK5A/text-sign-showing-survey-business-idea-research-method-used-for-collecting-data-from-a-predefined-group-cartoon-heads-drawing-drawing-with-speech-bub-2HNPK5A.jpg)
+
+## Preliminaries
+
+This module introduces how survey data can be a powerful tool in
+anthropological research by using real-world responses from a survey
+done in this class. Surveys allow anthropologists to gather insights
+into cultural beliefs, behaviors, and perceptions across diverse
+populations. In this module, you'll explore how structured survey
+responses can be analyzed to reveal patterns and meanings relevant to
+social science questions. To get started, you’ll need the following:
+
+**Download the Required packages**
+
+```{r setup, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(curl)
+library(ggplot2)
+library(tm)
+library(wordcloud2)
+library(RColorBrewer)
+```
 
 ## Objectives
 
@@ -17,9 +40,9 @@ editor_options:
 | 2. How to calculate descriptive statistics using survey data
 | 3. How to determine what type of analyses we can do with survey data.
 
-## **BUT FIRST:**
+**BUT FIRST:**
 
-## **Why Use Survey Data in Anthropology?**
+**Why Use Survey Data in Anthropology?**
 
 Survey data helps anthropologists:
 
@@ -48,65 +71,69 @@ Through open-and closed-ended survey questions, they can:
     regression models to predict educational outlook based on
     socioeconomic variables.
 
-## **1. Loading and Exploring Data**
-
-We will use a `survey` dataset for this Module. We will need to install
-some packages needed to run the code and explore it:
-
-```{r}
-# First install these packages
-library(tidyverse)
-library(curl)
-library(ggplot2)
-library(wordcloud)
-```
+**1. Loading and Exploring the Data**
+![](https://www.publicvoice.co.nz/wp-content/uploads/2017/11/datatoon.jpg)
+We will use a `survey` dataset for this Module. We will need to load in the dataset:
 
 ```{r}
 # Load the raw dataset
-f <- curl("https://raw.githubusercontent.com/ZeddyCraft/AN588-Group-Presentation/refs/heads/main/Cleaned_Survey.csv")
-d <- read.csv(f, header = TRUE, sep = ",")
+raw_data <- curl("https://github.com/ZeddyCraft/AN588-Group-Presentation/raw/refs/heads/main/AN588%20Survey%20(Responses)%20-%20Form%20Responses%201.csv")
+d <- read.csv(raw_data, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
-```
-
-```{r}
-# Describe Your Data
-str(d)
-summary(d)
 ```
 
 # Challenge 1: Reviewing Survey Data
-Take a moment to explore the raw survey data above. Before we begin analysis, consider the following questions:
 
-1. What is wrong with this dataset here? 
+Take a moment to explore the raw survey data above. Before we begin
+analysis, consider the following questions:
 
-2. How does the wording of the responses influence the responses?
+1.  What is wrong with this dataset here?
 
-3. What challenges or limitations would this impose on our research?
+2.  What will likely happen if we run an analysis with right now?
 
-Now load this dataset:
+3.  What challenges or limitations would this impose on our research?
+
+*Why Cleaning Your Data Matters*
+
+Before conducting any kind of analysis, it’s essential to clean your
+data. Dirty or inconsistent data can lead to misleading results or
+errors in your analysis. Common cleaning steps include:
+
+-   Renaming or relabeling columns for clarity
+-   Converting text responses to numeric or categorical variables (e.g.
+    as.numeric)
+-   Handling missing data appropriately
+-   Standardizing scales (e.g., Likert items)
+
+You can clean your data using R (e.g., `mutate()`, `rename()`,
+`filter()` functions in `dplyr`), or manually in a spreadsheet if the
+dataset is small. The cleaned version used in this module is already
+processed for demonstration.
+
+Now load this cleaned dataset:
+
 ```{r}
 # Load the dataset
-f <- curl("https://raw.githubusercontent.com/ZeddyCraft/AN588-Group-Presentation/refs/heads/main/Cleaned_Survey.csv")
-d <- read.csv(f, header = TRUE, sep = ",")
+cleaned_data <- curl("https://github.com/ZeddyCraft/AN588-Group-Presentation/raw/refs/heads/main/AN588%20Survey%20(Responses)%20-%20Cleaned%20Data.csv")
+d <- read.csv(cleaned_data, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
 ```
 
-```{r}
-# Describe Your Data
-str(d)
-summary(d)
-```
+Discussion: What differences do you see with this dataset? How does it
+influence our research going forward?
 
-Discussion: What differences do you see with this dataset? How does it influence our research going forward?
-
-IMPORTANT: Clean you data!!
-
+*TAKEAWAY: Clean your data!!*
 
 # Challenge 2: Test a Hypothesis
 
-**Hypothesis:** Academic confidence will have a higher prediction rate than anxiousness for perceived job security.
+![](C:/Users/Richard/Desktop/AN588%20R%20Studio/Group%20Presentation/AN588-Group-Presentation/cartoon_gif_1.jpg)
 
-```{r}
+**Topic:** Regression Modeling in Survey Research
+
+**Objective:** Use basic regression models to compare the predictive
+power of confidence and anxiety on job security.
+
+```{r challenge-hypothesis}
 survey_data <- d
 Confidence <- d$Academic_Confidence
 Anxiety <- d$Future_Anxious
@@ -123,6 +150,7 @@ summary(model_anx)
 ```
 
 ```{r}
+# Compare R-squared values
 conf_r2 <- summary(model_conf)$r.squared
 anx_r2 <- summary(model_anx)$r.squared
 
@@ -130,7 +158,12 @@ bar_data <- tibble(
   Predictor = c("Academic Confidence", "Academic Anxiety"),
   R_squared = c(conf_r2, anx_r2)
 )
+```
 
+**Let's visualize it**
+
+```{r}
+# Barplot
 ggplot(bar_data, aes(x = Predictor, y = R_squared, fill = Predictor)) +
   geom_col(show.legend = FALSE) +
   ylim(0, 1) +
@@ -142,52 +175,85 @@ ggplot(bar_data, aes(x = Predictor, y = R_squared, fill = Predictor)) +
   theme_minimal()
 ```
 
-
 ```{r}
 # Scatterplot
-ggplot(d, aes(x = Academic_Confidence, y = Job_Confidence)) +
+ggplot(bar_data, aes(x = Predictor, y = R_squared)) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +
   labs(title = "Academic Confidence vs. Job Security",
        x = "Academic Confidence",
        y = "Job Security")
-
-# Pearson correlation
-jobsecured <- cor.test(d$Academic_Confidence, d$Job_Confidence)
-jobsecured
 ```
+
+**Discussion Prompt:** Which predictor has a stronger relationship with
+perceived job security? What might this tell us about how confidence and
+anxiety influence perceptions of the future?
+
+**Takeaway:** Regression helps test relationships between variables — in
+this case, identifying whether emotional or academic factors are more
+influential on students' views of their future.
+
+## Qualitative Statistics
+
+![](https://s3.amazonaws.com/lowres.cartoonstock.com/business-commerce-market_research-market_surveys-market_researchers-researcher-product_research-ato0018_low.jpg)
+One of the most useful parts of surveys is qualitative statistics or
+data represented by words or phrases, not numbers.
+
+Take for example, the "Favorite_Color" column, based on the prompt "What
+is your favorite color?".
 
 ```{r}
-dummy <- fastDummies::dummy_cols(d)
-dummy
+head(d$Favorite_Color)
 ```
+
+How can we organize this data? How can we analyze it? Traditional
+methods of data visualization don't work and neither do traditional
+methods of analysis. One way of data visualization is through word
+clouds. Word clouds correlate the frequency of a descriptor with the
+size of the word in the image, giving us a visual representation of
+these descriptions. The package wordcloud2 gives us a function
+"wordcloud2" which lets us create these in r.
+
+```{r wordcloud}
+#first let's find the frequency (or counts) of each of the color responses in r
+t<-table(d$Favorite_Color)
+wordcloud2(t, size=.8, color=(c("Black","Blue","Brown","Cyan","Green","Pink","Purple","Red","Teal","Yellow")))
+```
+
+That's visualization! Word cloud can be an amazing tool to use for your
+data visuals. Another common form of visualization is through graphs! The two most common types of graphs used are pie graphs and bar graphs. Let's make a few graphs using the favorite color of the respondents!
 
 ```{r}
-fastDummies_example <- data.frame(numbers = 0:50,
-                    age = c(d$Age),
-                    gender  = c(d$Gender),
-                    height = c(d$Height.In.),
-                    weight   = c(d$Weight.lbs),
-                    stringsAsFactors = FALSE)
-knitr::kable(fastDummies_example)
+ggplot(d, aes(x=Favorite_Color, fill=Favorite_Color))+
+  geom_bar(show.legend = F)+
+  scale_fill_manual(values=c("black","blue","brown","cyan","green","pink","purple","red","turquoise","yellow"))
+pie(x=t,col=c("black","blue","brown","cyan","green","pink","purple","red","turquoise","yellow"))
 ```
 
-\`\`\`{r} model \<- lm(Gender \~ Age + height + weight,
-data=survey_demo)
+Notice how ggplot doesn't have a built-in function for pie graphs. You actually can make pie graphs using ggplot! Here's a good [guide](https://r-graph-gallery.com/piechart-ggplot2.html) on how to do so!
+# Challenge 3
 
-Outline for analysis:
+Now it's your turn. Let's try making a word cloud and a bar graph with the Majors column
 
-\- Cross-comparasion (Males vs Females vs Non-Binary)
+```{r}
+t2<-table(d$Major)
+wordcloud2(t2, size=.4, color="random-dark")
+ggplot(d, aes(x=Major,fill=Major))+
+  geom_bar(show.legend = F)
+```
 
-\- Correlations Analysis
+**Discussion Prompt:** What is the most frequent major that appeared in
+this dataset? Any interesting major in there?
 
- - inferential statistics
+**Takeaway:** Text data adds depth — a word cloud offers a quick
+thematic scan, helping anthropologists connect numbers to narratives.
 
- - Word Cloud Analysis (qualitive data):
+# Conclusion
 
-Lindsay - Descriptive Statistic (quantatitive data): Jon - regression
-analysis?:
+Survey data is an incredibly flexible tool for anthropologists. In this
+module, we explored descriptive stats, modeling, and qualitative
+visualization — all from one simple dataset. The skills here are the
+foundation for both research and applied work.
 
-Jon - college student's anxious to predicting likihood to secure job?
-
-Cite some references for analyzing survey data
+![](https://s3.amazonaws.com/lowres.cartoonstock.com/business-commerce-businesses-reports-opinion_polls-managers-surveys-tmcn2539_low.jpg)
+=======
