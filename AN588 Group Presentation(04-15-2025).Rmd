@@ -69,9 +69,10 @@ Through open-and closed-ended survey questions, they can:
     regression models to predict educational outlook based on
     socioeconomic variables.
 
-**1. Loading and Exploring the Data**
+# **1. Loading and Exploring the Data**
 ![](https://www.publicvoice.co.nz/wp-content/uploads/2017/11/datatoon.jpg)
-We will use a `survey` dataset for this Module. We will need to load in the dataset:
+We will use a `survey` dataset for this Module. We will need to load in
+the dataset:
 
 ```{r}
 # Load the raw dataset
@@ -80,7 +81,7 @@ d <- read.csv(raw_data, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
 ```
 
-# Challenge 1: Reviewing Survey Data
+## Challenge 1: Reviewing Survey Data
 
 Take a moment to explore the raw survey data above. Before we begin
 analysis, consider the following questions:
@@ -91,7 +92,7 @@ analysis, consider the following questions:
 
 3.  What challenges or limitations would this impose on our research?
 
-*Why Cleaning Your Data Matters*
+## *Why Cleaning Your Data Matters*
 
 Before conducting any kind of analysis, it’s essential to clean your
 data. Dirty or inconsistent data can lead to misleading results or
@@ -101,7 +102,7 @@ errors in your analysis. Common cleaning steps include:
 -   Converting text responses to numeric or categorical variables (e.g.
     as.numeric)
 -   Handling missing data appropriately
--   Standardizing scales 
+-   Standardizing scales
 
 You can clean your data using R (e.g., `mutate()`, `rename()`,
 `filter()` functions in `dplyr`), or manually in a spreadsheet if the
@@ -117,19 +118,36 @@ d <- read.csv(cleaned_data, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
 ```
 
-Discussion: What differences do you see with this dataset? How does it
-influence our research going forward?
+## **Discussion Prompt:** 
 
-*TAKEAWAY: Clean your data!!*
+What differences do you see with this dataset? How does it influence our research going forward?
 
-# Challenge 2: Test a Hypothesis
+### *TAKEAWAY: Clean your data!!*
+
+# **Regression Modeling in Survey Research**
 
 ![](https://i1.wp.com/freshspectrum.com/wp-content/uploads/2016/09/Pie-Chart-Formatting.png?resize=512%2C384)
 
-**Topic:** Regression Modeling in Survey Research
+## *Objective*: 
 
-**Objective:** Use basic regression models to compare the predictive
-power of confidence and anxiety on job security.
+Learn to use survey data to test theoretical relationships using linear models.*
+
+### 🧠 Conceptual Focus:   
+In anthropology, forming and testing hypotheses helps us connect individual experiences to larger social patterns. For example, we might ask:
+"*Does a student’s academic confidence influence how secure they feel about their job prospects?*"
+
+### 📊 Skill Focus: 
+- Learn how to structure a testable hypothesis using Likert scale data.
+- Practice fitting linear models (`lm()`) in R.
+- Compare model fit using R-squared.
+- Interpret coefficients and draw conclusions.
+
+### 🔬 Hypothesis:
+> *Academic confidence will have a stronger predictive relationship with job security than academic anxiety.*
+
+This is an anthropological question because it links **subjective experience** (confidence, anxiety) to **structural expectations** (job market, future security), all within a **cultural context** (e.g., university life in a late-capitalist society).
+
+Let’s test this using regression models.
 
 ```{r challenge-hypothesis}
 survey_data <- d
@@ -147,6 +165,7 @@ summary(model_conf)
 summary(model_anx)
 ```
 
+**Let's visualize it**
 ```{r}
 # Compare R-squared values
 conf_r2 <- summary(model_conf)$r.squared
@@ -156,11 +175,7 @@ bar_data <- tibble(
   Predictor = c("Academic Confidence", "Academic Anxiety"),
   R_squared = c(conf_r2, anx_r2)
 )
-```
 
-**Let's visualize it**
-
-```{r}
 # Barplot
 ggplot(bar_data, aes(x = Predictor, y = R_squared, fill = Predictor)) +
   geom_col(show.legend = FALSE) +
@@ -173,28 +188,17 @@ ggplot(bar_data, aes(x = Predictor, y = R_squared, fill = Predictor)) +
   theme_minimal()
 ```
 
-```{r}
-# Scatterplot
-ggplot(bar_data, aes(x = Predictor, y = R_squared)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE) +
-  labs(title = "Academic Confidence vs. Job Security",
-       x = "Academic Confidence",
-       y = "Job Security")
-```
+## **Discussion Prompt:** 
 
-**Discussion Prompt:** Which predictor has a stronger relationship with
-perceived job security? What might this tell us about how confidence and
-anxiety influence perceptions of the future?
+Which predictor has a stronger relationship with perceived job security? What might this tell us about how confidence and anxiety influence perceptions of the future?
 
-**Takeaway:** Regression helps test relationships between variables — in
-this case, identifying whether emotional or academic factors are more
-influential on students' views of their future.
+### **Takeaway:** 
 
-## Qualitative Statistics
+Regression helps test relationships between variables — in this case, identifying whether emotional or academic factors are more influential on students' views of their future. 
+
+# Qualitative Statistics
 
 ![](https://s3.amazonaws.com/lowres.cartoonstock.com/business-commerce-market_research-market_surveys-market_researchers-researcher-product_research-ato0018_low.jpg)
-=======
 
 One of the most useful parts of surveys is qualitative statistics or
 data represented by words or phrases, not numbers.
@@ -224,7 +228,9 @@ wordcloud2(t, size=.8, color=(c("Black","Blue","Brown","Cyan","Green","Pink","Pu
 ```
 
 That's visualization! Word cloud can be an amazing tool to use for your
-data visuals. Another common form of visualization is through graphs! The two most common types of graphs used are pie graphs and bar graphs. Let's make a few graphs using the favorite color of the respondents!
+data visuals. Another common form of visualization is through graphs!
+The two most common types of graphs used are pie graphs and bar graphs.
+Let's make a few graphs using the favorite color of the respondents!
 
 ```{r}
 ggplot(d, aes(x=Favorite_Color, fill=Favorite_Color))+
@@ -233,11 +239,15 @@ ggplot(d, aes(x=Favorite_Color, fill=Favorite_Color))+
 pie(x=t,col=c("black","blue","brown","cyan","green","pink","purple","red","turquoise","yellow"))
 ```
 
-Notice how ggplot doesn't have a built-in function for pie charts. You actually can make pie charts using ggplot! Here's a good [guide](https://r-graph-gallery.com/piechart-ggplot2.html) on how to do so!
+Notice how ggplot doesn't have a built-in function for pie charts. You
+actually can make pie charts using ggplot! Here's a good
+[guide](https://r-graph-gallery.com/piechart-ggplot2.html) on how to do
+so!
 
-# Challenge 3
+## Challenge 3
 
-Now it's your turn. Let's try making a word cloud and a bar graph with the Majors column.
+Now it's your turn. Let's try making a word cloud and a bar graph with
+the Majors column.
 
 ```{r}
 t2<-table(d$Major)
@@ -249,11 +259,13 @@ ggplot(d, aes(x=Major,fill=Major))+
 
 ```
 
-**Discussion Prompt:** What is the most frequent major that appeared in
-this dataset? Any interesting major in there?
+### **Discussion Prompt:** 
 
-**Takeaway:** Text data adds depth — a word cloud offers a quick
-thematic scan, helping anthropologists connect numbers to narratives.
+What is the most frequent major that appeared in this dataset? Any interesting major in there?
+
+### **Takeaway:** 
+
+Text data adds depth — a word cloud offers a quick thematic scan, helping anthropologists connect numbers to narratives.
 
 # Conclusion
 
