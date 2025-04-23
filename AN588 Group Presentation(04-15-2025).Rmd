@@ -113,7 +113,7 @@ Now load this cleaned dataset:
 
 ```{r}
 # Load the dataset
-cleaned_data <- curl("https://github.com/ZeddyCraft/AN588-Group-Presentation/raw/refs/heads/main/AN588%20Survey%20(Responses)%20-%20Cleaned%20Data.csv")
+cleaned_data <- curl("https://github.com/ZeddyCraft/AN588-Group-Presentation/blob/main/Cleaned_Data_4%3A23.csv")
 d <- read.csv(cleaned_data, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
 ```
