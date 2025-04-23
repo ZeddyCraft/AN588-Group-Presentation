@@ -26,9 +26,11 @@ social science questions. To get started, you’ll need the following:
 library(tidyverse)
 library(curl)
 library(ggplot2)
+library(dplyr)
 library(tm)
 library(wordcloud2)
 library(RColorBrewer)
+library(lme4)
 ```
 
 ## Objectives
@@ -70,6 +72,7 @@ Through open-and closed-ended survey questions, they can:
     socioeconomic variables.
 
 # **1. Loading and Exploring the Data**
+
 ![](https://www.publicvoice.co.nz/wp-content/uploads/2017/11/datatoon.jpg)
 We will use a `survey` dataset for this Module. We will need to load in
 the dataset:
@@ -113,14 +116,16 @@ Now load this cleaned dataset:
 
 ```{r}
 # Load the dataset
-cleaned_data <- curl("https://github.com/ZeddyCraft/AN588-Group-Presentation/blob/main/Cleaned_Data_4%3A23.csv")
-d <- read.csv(cleaned_data, header = TRUE, sep = ",", stringsAsFactors = FALSE)
-head(d)
+cleaned_data <- curl("https://github.com/ZeddyCraft/AN588-Group-Presentation/raw/refs/heads/main/Cleaned_Data_4:23.csv")
+d1 <- read.csv(cleaned_data, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+options(scipen = 999) # Turn off scientific notation for printing
+head(d1)
 ```
 
-## **Discussion Prompt:** 
+## **Discussion Prompt:**
 
-What differences do you see with this dataset? How does it influence our research going forward?
+What differences do you see with this dataset? How does it influence our
+research going forward?
 
 ### *TAKEAWAY: Clean your data!!*
 
@@ -128,32 +133,43 @@ What differences do you see with this dataset? How does it influence our researc
 
 ![](https://i1.wp.com/freshspectrum.com/wp-content/uploads/2016/09/Pie-Chart-Formatting.png?resize=512%2C384)
 
-## *Objective*: 
+## *Objective*:
 
-Learn to use survey data to test theoretical relationships using linear models.*
+Learn to use survey data to test theoretical relationships using linear
+models.\*
 
-### 🧠 Conceptual Focus:   
-In anthropology, forming and testing hypotheses helps us connect individual experiences to larger social patterns. For example, we might ask:
-"*Does a student’s academic confidence influence how secure they feel about their job prospects?*"
+### 🧠 Conceptual Focus:
 
-### 📊 Skill Focus: 
-- Learn how to structure a testable hypothesis using Likert scale data.
-- Practice fitting linear models (`lm()`) in R.
-- Compare model fit using R-squared.
-- Interpret coefficients and draw conclusions.
+In anthropology, forming and testing hypotheses helps us connect
+individual experiences to larger social patterns. For example, we might
+ask: "*Does a student’s academic confidence influence how secure they
+feel about their job prospects?*"
+
+### 📊 Skill Focus:
+
+-   Learn how to structure a testable hypothesis using Likert scale
+    data.
+-   Practice fitting linear models (`lm()`) in R.
+-   Compare model fit using R-squared.
+-   Interpret coefficients and draw conclusions.
 
 ### 🔬 Hypothesis:
-> *Academic confidence will have a stronger predictive relationship with job security than academic anxiety.*
 
-This is an anthropological question because it links **subjective experience** (confidence, anxiety) to **structural expectations** (job market, future security), all within a **cultural context** (e.g., university life in a late-capitalist society).
+> *Academic confidence will have a stronger predictive relationship with
+> job security than academic anxiety.*
+
+This is an anthropological question because it links **subjective
+experience** (confidence, anxiety) to **structural expectations** (job
+market, future security), all within a **cultural context** (e.g.,
+university life in a late-capitalist society).
 
 Let’s test this using regression models.
 
 ```{r challenge-hypothesis}
-survey_data <- d
-Confidence <- d$Academic_Confidence
-Anxiety <- d$Future_Anxious
-JobSecurity <- d$Job_Confidence
+survey_data <- d1
+Confidence <- d1$Academic_Confidence
+Anxiety <- d1$Future_Anxious
+JobSecurity <- d1$Job_Confidence
 ```
 
 ```{r}
@@ -166,6 +182,7 @@ summary(model_anx)
 ```
 
 **Let's visualize it**
+
 ```{r}
 # Compare R-squared values
 conf_r2 <- summary(model_conf)$r.squared
@@ -188,13 +205,124 @@ ggplot(bar_data, aes(x = Predictor, y = R_squared, fill = Predictor)) +
   theme_minimal()
 ```
 
-## **Discussion Prompt:** 
+## **Discussion Prompt:**
 
-Which predictor has a stronger relationship with perceived job security? What might this tell us about how confidence and anxiety influence perceptions of the future?
+Which predictor has a stronger relationship with perceived job security?
+What might this tell us about how confidence and anxiety influence
+perceptions of the future?
 
-### **Takeaway:** 
+**📘 Learning Note:** Linear regression is just one way to model
+relationships between survey responses. Depending on your research
+question and data structure, other methods may be more appropriate. For
+instance:
 
-Regression helps test relationships between variables — in this case, identifying whether emotional or academic factors are more influential on students' views of their future. 
+-   **Generalized Linear Models (GLMs)** can be used when your dependent
+    variable is categorical or count-based.(e.g., predicting whether a
+    student feels included in campus culture based on confidence and
+    anxiety levels).
+-   **Mixed Effects Models** are useful when your data includes repeated
+    measures or nested structures (e.g., analyzing student responses
+    grouped by their Major with random intercepts for each group).
+-   **Ordinal Regression** is better suited for Likert-type responses
+    when the order matters but the spacing between options is not equal.
+
+```{r Chicken}
+# Chicken Visuals
+# Remove commas or weird characters if necessary
+d1$Chickens_Basement <- gsub(",", "", d1$Chickens_Basement)
+
+# Convert to numeric
+d1$Chickens_Basement <- as.numeric(d1$Chickens_Basement)
+
+d1$log_chickens <- log10(d1$Chickens_Basement + 1)
+d1$log_major <- as.factor(d1$Major)
+chicken_major_model <- lm(log_chickens ~ log_major, data = d1)
+summary(chicken_major_model)
+anova(chicken_major_model)
+
+# Create a new column for the BU schools
+d1 <- d1 %>%
+  mutate(school = case_when(
+    Major %in% c("Psychology", "Anthropology", "Biology", "History", "Philosophy", "Political Science", "Marine Sciences", "Computer Science", "Sociology", "Archaeology", "Physics", "Neuroscience", "Astronomy") ~ "CAS",
+    Major %in% c("Electrical Engineering", "Mechanical Engineering", "Robotics & Autonomous Systems", "Mechanical engineering", "Mechanical Engineering", "Computer Engineering") ~ "ENG",
+    Major %in% c("Journalism", "Film & TV", "Advertising", "Public Relations") ~ "COM",
+    Major %in% c("Business Administration", "Accounting", "Finance", "	
+Business Administration & Management", "Business") ~ "Questrom",
+    Major %in% c("Music", "Theatre", "Performance", "Music Education") ~ "CFA",
+    TRUE ~ "Other"
+  ))
+
+# Model Chickens by School
+mean_chickens <- d1 %>%
+  group_by(school) %>%
+  summarise(mean_log_chickens = mean(log_chickens, na.rm = TRUE))
+
+ggplot(mean_chickens, aes(x = school, y = mean_log_chickens, fill = school)) +
+  geom_col() +
+  labs(
+    title = "Mean Chicken Estimate by School",
+    x = "School",
+    y = "Proportion of Chickens"
+  ) +
+  theme_minimal()
+```
+
+```{r Zombies}
+# Zombie Visuals
+zombie_level <- cut(d1$Zombies_Could_Kill, 
+                                breaks = c(-Inf, 5, 15, 20, Inf),
+                                labels = c("Low", "Moderate", "High", "Ultra"))
+# Then model as a factor outcome
+glm(zombie_level ~ Age + Like_BU, data = d1, family = "binomial")
+
+ggplot(d1, aes(x = zombie_level)) +
+  geom_bar(fill = "purple") +
+  labs(title = "Zombie Killer Tiers", x = "Zombie Tier", y = "Count")
+```
+
+```{r}
+# Model: log10(goats + 1) ~ zombies_killed + chickens_in_basement
+d1$Goat_Number <- as.numeric(d1$Goat_Number)
+d1$log_goats <- log10(d1$Goat_Number + 1)
+
+goat_model <- lm(log_goats ~ Future_Anxious, data = d1)
+summary(goat_model)
+
+#Visuals
+ggplot(d1, aes(x = Future_Anxious, y = log_goats)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", color = "darkgreen") +
+  labs(
+    title = "Anxiety Levels to Goat Desire",
+    x = "Future Anxious Score",
+    y = "How many Goats they Want?"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+# Goats Visual
+ggplot(d1, aes(x = log10(Goat_Number + 1))) +
+  geom_density(fill = "orange", alpha = 0.6) +
+  geom_rug(color = "darkred", alpha = 0.5) +
+  labs(
+    title = "How Many Goats They Want",
+    x = "Goats Proportion",
+    y = "Density"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12)
+  ) 
+```
+
+### **Takeaway:**
+
+Choosing the right model and visuals depends on the nature of the
+variables in your survey and the assumptions behind the statistical
+method.
 
 # Qualitative Statistics
 
@@ -207,7 +335,7 @@ Take for example, the "Favorite_Color" column, based on the prompt "What
 is your favorite color?".
 
 ```{r}
-head(d$Favorite_Color)
+head(d1$Favorite_Color)
 ```
 
 How can we organize this data? How can we analyze it? Traditional
@@ -223,7 +351,7 @@ these descriptions. The package wordcloud2 gives us a function
 library(wordcloud2)
 
 #first let's find the frequency (or counts) of each of the color responses in r
-t<-table(d$Favorite_Color)
+t<-table(d1$Favorite_Color)
 wordcloud2(t, size=.8, color=(c("Black","Blue","Brown","Cyan","Green","Pink","Purple","Red","Teal","Yellow")))
 ```
 
@@ -233,7 +361,7 @@ The two most common types of graphs used are pie graphs and bar graphs.
 Let's make a few graphs using the favorite color of the respondents!
 
 ```{r}
-ggplot(d, aes(x=Favorite_Color, fill=Favorite_Color))+
+ggplot(d1, aes(x=Favorite_Color, fill=Favorite_Color))+
   geom_bar(show.legend = F)+
   scale_fill_manual(values=c("black","blue","brown","cyan","green","pink","purple","red","turquoise","yellow"))
 pie(x=t,col=c("black","blue","brown","cyan","green","pink","purple","red","turquoise","yellow"))
@@ -250,22 +378,24 @@ Now it's your turn. Let's try making a word cloud and a bar graph with
 the Majors column.
 
 ```{r}
-t2<-table(d$Major)
+t2<-table(d1$Major)
 wordcloud2(t2, size=.4, color="random-dark")
 
-ggplot(d, aes(x=Major,fill=Major))+
+ggplot(d1, aes(x=Major,fill=Major))+
   geom_bar()+
   theme(axis.text.x=element_blank(), legend.key.size=unit(.1, "cm"))
 
 ```
 
-### **Discussion Prompt:** 
+### **Discussion Prompt:**
 
-What is the most frequent major that appeared in this dataset? Any interesting major in there?
+What is the most frequent major that appeared in this dataset? Any
+interesting major in there?
 
-### **Takeaway:** 
+### **Takeaway:**
 
-Text data adds depth — a word cloud offers a quick thematic scan, helping anthropologists connect numbers to narratives.
+Text data adds depth — a word cloud offers a quick thematic scan,
+helping anthropologists connect numbers to narratives.
 
 # Conclusion
 
