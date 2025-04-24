@@ -1,11 +1,15 @@
 ---
 title: 'Survey Data: Properly Prepping, Analyzing, and Modeling For Research'
 author: "Lindsay Warrell & Jonathan Zhang"
-date: "`r Sys.Date()`"
-output: html_document
-editor_options: 
-  markdown: 
-    wrap: 72
+date: "04/29/2025"
+output: 
+  html_document:
+    markdown: 
+      wrap: 72
+    number_sections: true
+    toc: true
+    toc_depth: 3
+    theme: united
 ---
 
 # **Using Survey Data in Anthropology: Properly Prepping, Analyzing, and Modeling**
@@ -84,7 +88,7 @@ d <- read.csv(raw_data, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
 ```
 
-## Challenge 1: Reviewing Survey Data
+## Challenge 1: 
 
 Take a moment to explore the raw survey data above. Before we begin
 analysis, consider the following questions:
@@ -129,14 +133,14 @@ research going forward?
 
 ### *TAKEAWAY: Clean your data!!*
 
-# **Regression Modeling in Survey Research**
+# **Modeling and Visualizing Survey Data**
 
 ![](https://i1.wp.com/freshspectrum.com/wp-content/uploads/2016/09/Pie-Chart-Formatting.png?resize=512%2C384)
 
 ## *Objective*:
 
 Learn to use survey data to test theoretical relationships using linear
-models.\*
+models and visualization.\*
 
 ### 🧠 Conceptual Focus:
 
@@ -226,32 +230,34 @@ instance:
 -   **Ordinal Regression** is better suited for Likert-type responses
     when the order matters but the spacing between options is not equal.
 
+To show how flexible survey data is, we will try to model data that are more silly (Chickens, Zombies, and Goats). Starting with Chicken, we can try comparing different majors' perspectives on how many chickens can fit in the basement of CAS.  
+
+### Chickens in the Basement
 ```{r Chicken}
-# Chicken Visuals
 # Remove commas or weird characters if necessary
 d1$Chickens_Basement <- gsub(",", "", d1$Chickens_Basement)
 
 # Convert to numeric
 d1$Chickens_Basement <- as.numeric(d1$Chickens_Basement)
 
+# Use log-transformation to make the visuals more unified
 d1$log_chickens <- log10(d1$Chickens_Basement + 1)
-d1$log_major <- as.factor(d1$Major)
-chicken_major_model <- lm(log_chickens ~ log_major, data = d1)
-summary(chicken_major_model)
-anova(chicken_major_model)
-
+```
+Obviously, if we try to perspectives by majors, we will end up having a graph with respective majors to their response, which would make it look not visually pleasing. 
+```{r}
 # Create a new column for the BU schools
 d1 <- d1 %>%
   mutate(school = case_when(
-    Major %in% c("Psychology", "Anthropology", "Biology", "History", "Philosophy", "Political Science", "Marine Sciences", "Computer Science", "Sociology", "Archaeology", "Physics", "Neuroscience", "Astronomy") ~ "CAS",
+    Major %in% c("Psychology", "Anthropology", "Biology", "History", "Philosophy", "Political Science", "Marine Science", "Computer Science", "Sociology", "Archaeology", "Physics", "Neuroscience", "Astronomy", "Sociocultural Anthropology", "Biological Anthropology", "Mathematics") ~ "CAS",
     Major %in% c("Electrical Engineering", "Mechanical Engineering", "Robotics & Autonomous Systems", "Mechanical engineering", "Mechanical Engineering", "Computer Engineering") ~ "ENG",
     Major %in% c("Journalism", "Film & TV", "Advertising", "Public Relations") ~ "COM",
-    Major %in% c("Business Administration", "Accounting", "Finance", "	
-Business Administration & Management", "Business") ~ "Questrom",
-    Major %in% c("Music", "Theatre", "Performance", "Music Education") ~ "CFA",
+    Major %in% c("Business Administration", "Accounting", "Finance", "Business Administration & Management", "Business") ~ "Questrom",
+    Major %in% c("Music", "Theater", "Performance", "Music Education") ~ "CFA",
     TRUE ~ "Other"
   ))
+```
 
+```{r}
 # Model Chickens by School
 mean_chickens <- d1 %>%
   group_by(school) %>%
@@ -266,7 +272,10 @@ ggplot(mean_chickens, aes(x = school, y = mean_log_chickens, fill = school)) +
   ) +
   theme_minimal()
 ```
+This plot shows the average (log-transformed) number of chickens each school’s students estimated. While the estimates are whimsical, the plot still reflects possible group-level differences in estimation behavior—maybe engineering students make more practical guesses, while humanities students are more imaginative?
 
+### Zombies You Could Kill
+Now let's try it with Zombies. With Zombies, answers can vary based on more imaginary or realistic perspective. One way of fit the numbers in is categorizing them into groups, like with the chicken question. 
 ```{r Zombies}
 # Zombie Visuals
 zombie_level <- cut(d1$Zombies_Could_Kill, 
@@ -280,27 +289,15 @@ ggplot(d1, aes(x = zombie_level)) +
   labs(title = "Zombie Killer Tiers", x = "Zombie Tier", y = "Count")
 ```
 
+### Infinite Goats
+Now let's try doing goats. Since answers for this question might be more imaginary, we'll first have to convert them to fit into the visualization. 
 ```{r}
-# Model: log10(goats + 1) ~ zombies_killed + chickens_in_basement
+# Convert goats to numeric, in case of any issue in the data
 d1$Goat_Number <- as.numeric(d1$Goat_Number)
+
+# Log-transform for visualization 
 d1$log_goats <- log10(d1$Goat_Number + 1)
 
-goat_model <- lm(log_goats ~ Future_Anxious, data = d1)
-summary(goat_model)
-
-#Visuals
-ggplot(d1, aes(x = Future_Anxious, y = log_goats)) +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = "lm", color = "darkgreen") +
-  labs(
-    title = "Anxiety Levels to Goat Desire",
-    x = "Future Anxious Score",
-    y = "How many Goats they Want?"
-  ) +
-  theme_minimal()
-```
-
-```{r}
 # Goats Visual
 ggplot(d1, aes(x = log10(Goat_Number + 1))) +
   geom_density(fill = "orange", alpha = 0.6) +
@@ -317,12 +314,43 @@ ggplot(d1, aes(x = log10(Goat_Number + 1))) +
     axis.title.y = element_text(size = 12)
   ) 
 ```
+This density plot does reveal more skewed nature of the data. However, most people appear to only want a few goats, with a few participants desire millions. A good note is that log-transforming helped to bring that skew into view and makes it easier to compare distributions.
+
+### Let's further investigate it by Genders
+```{r}
+library(ggridges) # Will need this package for the visualization
+
+ggplot(d1, aes(x = log_goats, y = Gender, fill = Gender)) +
+  geom_density_ridges(alpha = 0.6, scale = 1.2) +
+  labs(
+    title = "Distribution of Goat Desire by Gender (Log-Transformed)",
+    x = "Self-Reported Goat Preference",
+    y = "Gender"
+  ) +
+  theme_minimal()
+```
+From the ridgeline plot, while all groups also tend to peak around the lower end of the scale, some of the outlier behavior appear to be coming from the male and non-binary groups, suggesting more playful exaggeration in certain subgroups.
+
+## Challenge 2: 
+Another realm of exploration can be doing them by schools. Go ahead and try it.
+```{r}
+# You can use 'school' to group the majors by schools, like in the Chicken Question. 
+ggplot(d1, aes(x = log_goats, y = school, fill = school)) +
+  geom_density_ridges(alpha = 0.5, scale = 1.2) +
+  labs(
+    title = "Distribution of Goat Desire by School (Log-Transformed)",
+    x = "Self-Reported Goat Preference",
+    y = "School"
+  ) +
+  theme_minimal()
+```
+
 
 ### **Takeaway:**
 
 Choosing the right model and visuals depends on the nature of the
 variables in your survey and the assumptions behind the statistical
-method.
+method. Even silly survey data can be modeled with basic techniques like linear regression, logistic regression, and transformation to fit into nice visualizations.
 
 # Qualitative Statistics
 
